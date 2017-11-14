@@ -49,3 +49,33 @@ names(df_1) <- c("var1", "var2", "var3", "var4")
 test <- data.frame(A = c(1,2,3), B=c( "aB1" , "aB2" , "aB3"))
 test[, 2]
 test
+
+## repitition:
+# create data-frame with multiple variables and values.
+df <- data.frame(plot = "location_name_1", measure1 = runif(100) * 1000, measure2 = round(runif(100) *100), 
+                 value = rnorm(100, 2, 1), ID = rep(LETTERS, 100))
+# runif creates random numbers (by default from [0,1]). Here n = 100 times.
+df_2 <- data.frame(plot="location_name_2", measure1 = runif(50)*100, measure2 = round(runif(50)*10),
+                   value = rnorm(50), ID = rep(LETTERS, 50))
+df_3 = rbind(df, df_2) # connect the two data frames.
+summary(df_3)
+length(df$measure1)
+length(df_3$measure1)
+
+df[ , c("plot", "measure1", "measure2")]
+
+# save only these 3 columns as new data.frame
+x <- df[ , c("plot", "measure1", "measure2", "ID")]
+x2 <- df[ , c("measure1", "measure2")]
+
+par(mfrow = c(1,1))
+plot(x$measure1[x$ID == "A" ] ~ x$measure2[x$ID == "A" ], 
+     col = "red")
+points(x$measure1[x$ID == "B" ] ~ x$measure2[x$ID == "B" ], 
+     col = "blue")
+
+
+plot(x$measure2 ~ x$plot)
+plot(x)
+plot(x$plot, x$measure1, 
+     type = "p")
