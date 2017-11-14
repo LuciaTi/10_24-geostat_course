@@ -2,7 +2,7 @@
 
 setwd("C:/Users/s331737/Desktop/Lucia Tischer")
 
-## 1) repetion ####
+## repetion ####
 # example data is read in.
 test_data <- read.table("test_data.csv", header = TRUE, sep = ";")
 summary(test_data)
@@ -64,7 +64,7 @@ length(df_3$measure1)
 
 df[ , c("plot", "measure1", "measure2")]
 
-# save only these 3 columns as new data.frame
+# save only these 4 columns as new data.frame
 x <- df[ , c("plot", "measure1", "measure2", "ID")]
 x2 <- df[ , c("measure1", "measure2")]
 
@@ -74,8 +74,58 @@ plot(x$measure1[x$ID == "A" ] ~ x$measure2[x$ID == "A" ],
 points(x$measure1[x$ID == "B" ] ~ x$measure2[x$ID == "B" ], 
      col = "blue")
 
-
-plot(x$measure2 ~ x$plot)
+# try plotting with different coments...
+plot(x$measure2 ~ x$ID)
 plot(x)
 plot(x$plot, x$measure1, 
      type = "p")
+
+
+## Start with raster data ####
+
+library(raster)
+r1 <- raster(nrows =10, ncols =10)
+r1[] <- rnorm(100)
+plot(r1)
+
+# list of values is transvered to a spatial object and plotted:
+library(sp)
+poi1 <- cbind(c(rnorm(10)), c(rnorm(10)))
+poi1
+poi1.sp <- SpatialPoints(poi1)
+plot(poi1.sp)
+
+df <- data.frame(attr1 = c("a", "b", "z", "d", "e", "q", "w", "r", "z", "y"), attr2 =c(101:110))
+poi1.spdf <- SpatialPointsDataFrame(poi1.sp, df)
+plot(poi1.spdf)
+
+
+library(RStoolbox)
+lsat
+
+# plot band 2
+plot(lsat[[2]])
+plot(lsat$B2_dn)
+
+lsat_extract <- lsat[[2:3]]
+lsat_extract <- lsat[[c(2,3)]]
+lsat_extract <- c(lsat$B2_dn, lsat$B3_dn)
+
+lsat_2_100 <- lsat[lsat[[2]] <= 100] # values of band 2 <= 100
+ 
+x = getValues(lsat) 
+
+x <- lsat[]
+x <- lsat[lsat == 10]
+
+length(lsat[[2]])
+cellStats(lsat, max) # maximum value of each band
+cellStats(lsat$B2_dn, min) # minimum value of band 2
+
+
+
+library(move)
+data("leroy")
+env <- raster(leroy, vals =rnorm(100)) # leroy is added to environment
+plot(leroy)
+plot(lsat)
