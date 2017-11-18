@@ -86,7 +86,8 @@ df_1 <- data.frame(plot="location_name_2", measure1 = runif(50)*100, measure2 = 
                    value = rnorm(50), ID = rep(LETTERS, 50))
 df_2 <- data.frame(plot="location_name_3", measure1 = runif(50)*500, measure2 = round(runif(50)*50),
                    value = rnorm(50), ID = rep(LETTERS, 50))
-df_3 = rbind(df, df_1, df_2) # connect the two data frames.
+df_3 = rbind(df, df_1, df_2) # connect the three data frames.
+
 
 # do some data-checks.
 summary(df_3) # show stastic summary.
@@ -98,10 +99,26 @@ mode(df_3) # show saving-mode of df_3
 
 head(df[ , c("plot", "measure1", "measure2")]) # show all lines from only these columns of df.
 
-# save only these 4 columns as new data.frame
-x <- df_3[ , c("plot", "measure1", "measure2", "ID")]
-x2 <- df_3[ , c("measure1", "measure2")]
+head(df[grep("a", df$ID, ignore.case = TRUE), ]) # query data by using a keyword.
+# ignore.case = TRUE: all similar values are counted, also if difference small/capital letter exists + also partial strings are matched
+# ignore.case = FALSE: only taken into account, if strings match EXACTLY the keyword.
 
+
+# save only these 4 columns as new data.frame and plot the data.
+x <- df_3[ , c("plot", "measure1", "measure2", "ID")]
+
+ggplot(x)+                                         # second possibility
+  geom_point(aes(x=x$measure1,y=x$measure2,colour=x$ID))+
+  ggtitle("Measurements on different plots") +
+  xlab("measure 1") + 
+  ylab("measure 2") +
+  theme(axis.title.x = element_text(face = "italic", colour = "black", size = 14), 
+        axis.title.y = element_text(face = "italic", colour = "black", size = 14),
+        plot.title = element_text(face="bold", color="red", size=16), 
+        legend.title = element_text(face = "plain", colour = "black", size = 14),
+        legend.position="bottom",
+        legend.text=element_text(size=11)) +
+  labs(colour= "Plot-ID")
 
 
 
@@ -111,8 +128,8 @@ x3 <- df_3[ , c("plot", "measure1", "measure2")] # define the data.
 library(ggplot2)
 qplot(measure1, measure2, colour = plot, data = x3) # first possibility.
 
-ggplot(df_3)+                                         # second possibility
-  geom_point(aes(x=df_3$measure1,y=df_3$measure2,colour=df_3$plot))+
+ggplot(x3)+                                         # second possibility
+  geom_point(aes(x=x3$measure1,y=x3$measure2,colour=x3$plot))+
   ggtitle("Measurements on different plots") +
   xlab("measure 1") + 
   ylab("measure 2") +
@@ -129,18 +146,62 @@ plot(x3$measure1, x3$measure2, col = x3$plot)       # third possibility.
 legend("bottomright", legend=levels(x3$plot), pch = 15, col = unique(x3$plot))
 
 
+# plot only the data from lines 66:70, 3000:3010 and 5000:5010,  for plot, measure1 and measure2.
+x4 <- df_3[c(66:70, 3000:3010, 5000:5010), c("plot", "measure1", "measure2")]
+ggplot(x4)+                                         # second possibility
+  geom_point(aes(x=x4$measure1,y=x4$measure2,colour=x4$plot))+
+  ggtitle("Measurements on different plots") +
+  xlab("measure 1") + 
+  ylab("measure 2") +
+  theme(axis.title.x = element_text(face = "italic", colour = "black", size = 14), 
+        axis.title.y = element_text(face = "italic", colour = "black", size = 14),
+        plot.title = element_text(face="bold", color="red", size=16), 
+        legend.title = element_text(face = "plain", colour = "black", size = 14),
+        legend.position="bottom",
+        legend.text=element_text(size=11)) +
+  labs(colour= "Plots")
 
 
-plot(x$measure1[x$ID == "A" ] ~ x$measure2[x$ID == "A" ], 
-     col = "red")
-points(x$measure1[x$ID == "B" ] ~ x$measure2[x$ID == "B" ], 
-     col = "blue")
 
-# try plotting with different coments...
-plot(x$measure2 ~ x$ID)
-plot(x)
-plot(x$plot, x$measure1, 
-     type = "p")
+# explore ggplot-boxplots.
+# therefore: first create new data.
+df <- data.frame(plot = "location_name_1", measure1 = runif(100) * 500, measure2 = round(runif(100) *100), 
+                 value = rnorm(100, 2, 1), ID = rep(LETTERS, 100))
+# runif creates random numbers (by default from [0,1]). Here n = 100 times.
+df_1 <- data.frame(plot="location_name_2", measure1 = runif(50)*500, measure2 = round(runif(50)*10),
+                   value = rnorm(50), ID = rep(LETTERS, 50))
+df_2 <- data.frame(plot="location_name_3", measure1 = runif(50)*500, measure2 = round(runif(50)*50),
+                   value = rnorm(50), ID = rep(LETTERS, 50))
+df_3 <- data.frame(plot="location_name_4", measure1 = runif(50)*500, measure2 = round(runif(50)*100),
+                   value = rnorm(50), ID = rep(LETTERS, 50))
+df_4  = rbind(df, df_1, df_2, df_3) # connect the three data frames.
+
+x <- df_4[ , c("plot", "ID", "measure1", "measure2", "value")]
+
+
+ggplot(data = x, aes(x=x$plot,y=x$value, col = x$plot)) + 
+  geom_boxplot(outlier.colour="red", 
+               outlier.shape=16,
+               outlier.size=2) +
+  ggtitle("Measurements on different plots\nBoxplots") +
+  xlab("Plotname") + 
+  ylab("value") +
+  theme(plot.title=element_text(face="bold", color="red", size=16), 
+        axis.title.x =element_text(face= "italic", color="black", size=14),
+        axis.title.y =element_text(face= "italic", color="black", size=14),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(colour= "Plots")
+
+
+
+# explore the coplot() fumction:
+coplot(x$measure2 ~ x$measure1 | x$plot, 
+       col = x$plot, 
+       xlab = c("measure1", "plot"), 
+       ylab = "measure2")
+
+
 
 
 ## 4) Start with raster data ####
