@@ -73,7 +73,7 @@ test <- data.frame(A = c(1,2,3), B=c( "aB1" , "aB2" , "aB3")) # create data.fram
 test[, 2] # extract all lines from column 2
 test$A # equivalent call.
 test[ ,"A"] # equivalent call.
-test
+test # show all the matrix
 
 
 
@@ -82,20 +82,55 @@ test
 df <- data.frame(plot = "location_name_1", measure1 = runif(100) * 1000, measure2 = round(runif(100) *100), 
                  value = rnorm(100, 2, 1), ID = rep(LETTERS, 100))
 # runif creates random numbers (by default from [0,1]). Here n = 100 times.
-df_2 <- data.frame(plot="location_name_2", measure1 = runif(50)*100, measure2 = round(runif(50)*10),
+df_1 <- data.frame(plot="location_name_2", measure1 = runif(50)*100, measure2 = round(runif(50)*10),
                    value = rnorm(50), ID = rep(LETTERS, 50))
-df_3 = rbind(df, df_2) # connect the two data frames.
-summary(df_3)
-length(df$measure1)
-length(df_3$measure1)
+df_2 <- data.frame(plot="location_name_3", measure1 = runif(50)*500, measure2 = round(runif(50)*50),
+                   value = rnorm(50), ID = rep(LETTERS, 50))
+df_3 = rbind(df, df_1, df_2) # connect the two data frames.
 
-df[ , c("plot", "measure1", "measure2")]
+# do some data-checks.
+summary(df_3) # show stastic summary.
+length(df$measure1) # query the length/number of values.
+length(df_3$measure1)
+str(df_3) # show information about data
+head(df_3) # show first few lines.
+mode(df_3) # show saving-mode of df_3
+
+head(df[ , c("plot", "measure1", "measure2")]) # show all lines from only these columns of df.
 
 # save only these 4 columns as new data.frame
-x <- df[ , c("plot", "measure1", "measure2", "ID")]
-x2 <- df[ , c("measure1", "measure2")]
+x <- df_3[ , c("plot", "measure1", "measure2", "ID")]
+x2 <- df_3[ , c("measure1", "measure2")]
 
-par(mfrow = c(1,1))
+
+
+
+# plot the whole data for plot and measure 1 and 2.
+x3 <- df_3[ , c("plot", "measure1", "measure2")] # define the data.
+
+library(ggplot2)
+qplot(measure1, measure2, colour = plot, data = x3) # first possibility.
+
+ggplot(df_3)+                                         # second possibility
+  geom_point(aes(x=df_3$measure1,y=df_3$measure2,colour=df_3$plot))+
+  ggtitle("Measurements on different plots") +
+  xlab("measure 1") + 
+  ylab("measure 2") +
+  theme(axis.title.x = element_text(face = "italic", colour = "black", size = 14), 
+        axis.title.y = element_text(face = "italic", colour = "black", size = 14),
+        plot.title = element_text(face="bold", color="red", size=16), 
+        legend.title = element_text(face = "plain", colour = "black", size = 14),
+        legend.position="bottom",
+        legend.text=element_text(size=11)) +
+  labs(colour= "Plots")
+
+
+plot(x3$measure1, x3$measure2, col = x3$plot)       # third possibility.
+legend("bottomright", legend=levels(x3$plot), pch = 15, col = unique(x3$plot))
+
+
+
+
 plot(x$measure1[x$ID == "A" ] ~ x$measure2[x$ID == "A" ], 
      col = "red")
 points(x$measure1[x$ID == "B" ] ~ x$measure2[x$ID == "B" ], 
