@@ -207,48 +207,57 @@ coplot(x$measure2 ~ x$measure1 | x$plot,
 ## 4) Start with raster data ####
 
 library(raster)
-r1 <- raster(nrows =10, ncols =10)
-r1[] <- rnorm(100)
-plot(r1)
+r1 <- raster(nrows =10, ncols =10) # create a raser with 10 rows and 10 columns
+r1 # get information about the raster
+plot(r1) # plot the empty raster --> no values associated.
+r1[] <- rnorm(100) # fill the empty raster with 100 random values.
+plot(r1) # and plot these values.
 
-# list of values is transvered to a spatial object and plotted:
+# create a vector (spatial points)
 library(sp)
-poi1 <- cbind(c(rnorm(10)), c(rnorm(10)))
-poi1
-poi1.sp <- SpatialPoints(poi1)
-plot(poi1.sp)
+poi1 <- cbind(c(rnorm(10)), c(rnorm(10))) # create 10x10 random coordinates
+poi1 # show the coordinates
+poi1.sp <- SpatialPoints(poi1) # convert the list of coordinates to a spatial object
+plot(poi1.sp) # plot this object.
 
+# create a SpatialPointsDataFrame
 df <- data.frame(attr1 = c("a", "b", "z", "d", "e", "q", "w", "r", "z", "y"), attr2 =c(101:110))
 poi1.spdf <- SpatialPointsDataFrame(poi1.sp, df)
 plot(poi1.spdf)
 
 
+
+## example data set: lsat (package RStoolbox) and leroy (package move)
 library(RStoolbox)
-lsat
+lsat # information about the data set.
 
-# plot band 2
-plot(lsat[[2]])
-plot(lsat$B2_dn)
+# plot only band 1
+plot(lsat$B1_dn)
+plot(lsat[[1]])
 
+# extraxt band 2 and 3 and save them in a new object.
 lsat_extract <- lsat[[2:3]]
 lsat_extract <- lsat[[c(2,3)]]
 lsat_extract <- c(lsat$B2_dn, lsat$B3_dn)
 
-lsat_2_100 <- lsat[lsat[[2]] <= 100] # values of band 2 <= 100
- 
-x = getValues(lsat) 
+# query or mask values from lsat.
+lsat_sub <- lsat[8, 10] # pixel of 8th row and 10th column per band
+lsat_sub <- lsat[1:10, ] # pixels from rows 1:10 in each column per band
+lsat_sub <- lsat[500] # value per band with the cell-ID 500
+queryRaster <- (lsat[[(2)]] < 20) # create a query raster: in band 2 show only values which are < 20
+lsat_sub <- lsat[queryRaster]
+head(lsat_sub)
 
-x <- lsat[]
-x <- lsat[lsat == 10]
+# get the corner pixels of the raster data
+nr <- nrow(lsat)
+nc <- ncol(lsat)
+lsat[c(1, nr), c(1, nc)] # (for each band)
+lsat$B4_dn[c(1, nr), c(1, nc)] # (for band 4)
 
-length(lsat[[2]])
+# some information about the data.
+length(lsat[[2]]) # number of values in band 2
 cellStats(lsat, max) # maximum value of each band
 cellStats(lsat$B2_dn, min) # minimum value of band 2
 
 
 
-library(move)
-data("leroy")
-env <- raster(leroy, vals =rnorm(100)) # leroy is added to environment
-plot(leroy)
-plot(lsat)
