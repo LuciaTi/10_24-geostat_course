@@ -227,9 +227,14 @@ plot(poi1.spdf)
 
 
 
-## example data set: lsat (package RStoolbox) and leroy (package move)
+## example data set: lsat (package RStoolbox)
 library(RStoolbox)
 lsat # information about the data set.
+data(lsat) # load/crate the example data from the package.
+x <- lsat[1:10, ] # values of rows 1:10
+x <- lsat[] # all values
+x <- getValues(lsat) # all values
+x <- lsat[lsat$B2_dn < 20] # only values, where value from band 2 is < 20.
 
 # plot only band 1
 plot(lsat$B1_dn)
@@ -258,6 +263,22 @@ lsat$B4_dn[c(1, nr), c(1, nc)] # (for band 4)
 length(lsat[[2]]) # number of values in band 2
 cellStats(lsat, max) # maximum value of each band
 cellStats(lsat$B2_dn, min) # minimum value of band 2
+lsat[] <- rnorm(ncell(lsat)) # cells are filled with normal distributed data. ncell is number of entries.
+lsat[lsat < 0] <- NA # set all values in lsat <0 to NA
 
 
+
+# load example-vector data from the RStoolbox package:
+poly <- readRDS(system.file("external/trainingPolygons.rds", package="RStoolbox"))
+poly # --> Spdf with 36 features
+
+# create a new raster layer with proberties of poly and 100 values
+env <- raster(poly, vals = rnorm(100))  # poly defines the properties for the new raster Layer (same as for object poly)
+                                        # vals: values for the new raster layer.
+
+# extract values from env at the location of another spdf, here poly
+extract(env, poly)
+
+env[] <- 0 # set all values in env to cero
+env[poly] <- 1 # set areas of poly to 1
 
