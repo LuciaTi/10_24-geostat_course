@@ -171,4 +171,12 @@ lsat_rvi <- overlay(lsat$B4_dn, lsat$B3_dn, fun = rvi)
 plot(lsat_rvi)
 
 
+lsat_ndvi <- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "NDVI")
+plot(lsat_ndvi)
+lsat_DVI <- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "DVI")
+lsat_slavi <- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "SAVI")
+plot(lsat_slavi)
 
+vi_stack <- stack(lsat_DVI, lsat_ndvi, lsat_MSAVI)
+lsat_VI_sd <- calc(vi_stack, fun = sd)
+plot(lsat_VI_sd)
